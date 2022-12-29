@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>FotoBlog</title>
+    </head>
+    <body>
+        <h1>Bienvenue</h1>
+        {% block content %}{% endblock content %}
+            <p><a href="{% url 'home' %}">Flux</a></p>
+            <p><a href="{% url 'ticket' %}">Écrire un billet</a></p>
+            <p><a href="{% url 'posts' %}">Posts</a></p>
+            <p><a href="{% url 'follow' %}">Abonnements</a></p>
+            <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+        {% if user.is_authenticated %}
+            <p>Vous êtes connecté en tant que {{ request.user }}. <a href="{% url 'logout' %}">Se déconnecter</a></p>
+        {% endif %}
+        {% if not user.is_authenticated %}
+        <p>Pas encore membre ? <a href="{% url 'signup' %}">Inscrivez-vous maintenant !</a></p>
+        {% endif %}
+
+
+    </body>
+</html>
