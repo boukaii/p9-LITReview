@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 style="text-align: center;">Créer une review</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="forms">
+            {{ form_ticket.as_p }}-->
+            {{ form_review.as_p }}
+            <button type="submit"> Envoyer </button>
+            <button class="btn btn-secondary" value="Submit" type="submit" >Envoyer</button>
+        </div>
+    </form>
+{% endblock content%}

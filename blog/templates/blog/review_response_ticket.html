@@ -1,0 +1,47 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container card-body border border-dark bg-light">
+    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
+        <div class="col-6">
+            <p class="border-bottom border-light"> {{ ticket.user }} a demandé une critique </p>
+            <p class="border-bottom border-light"> {{ ticket.titre }}  </p>
+            <p> {{ ticket.description }} </p>
+            {% if ticket.image %}
+            <img src="{{ticket.image.url}}" width="100px" />
+            {% endif %}
+        </div>
+        <div class="col-3 col-center">
+            <p class="small border rounded-pill border-light">{{ ticket.time_created|date:"H:i, d F Y" }}</p>
+        </div>
+    </div>
+</div>
+<form method="post" class="form container" enctype="multipart/form-data">
+    <br><br>
+    {% csrf_token %}
+    <div class="container">
+        {{review_form.headline}}
+        <div class="container">
+            <div class="row bg-light">
+                {% for radio in review_form.rating %}
+                    <div class="col"> {{radio}}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {{review_form.body}}
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-center">
+                <br>
+                <a href="{% url 'home' %}"><button class="btn btn-secondary" type="button" >Tableau de bord</button></a>
+            </div>
+            <div class="col-6 col-center">
+                <br>
+                <button class="btn btn-secondary" value="Submit" type="submit" >Envoyer</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

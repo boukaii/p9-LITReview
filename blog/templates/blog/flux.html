@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<div class="container">
+    <div class="row ">
+        <div class="col-4 col-center">
+            <a href="{% url 'ticket' %}">
+                <button class="btn btn-secondary" type="button" >Demander une critique</button>
+            </a>
+        </div>
+        <div class="col-4 col-center">
+            <a href="{% url 'review' %}">
+                <button class="btn btn-secondary" type="button" >Créer une critique</button>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <br>
+    {% for post in posts %}
+        {% if post.content_type == 'REVIEW' %}
+            {% include 'blog/review.html' %}
+</div>
+    <br>
+        {% elif post.content_type == 'TICKET' and post.review_of.all.count == 0 %}
+                {% include 'blog/ticket.html' %}
+                    <div class="col-3">
+                    <a href="{% url 'review_response_ticket' ticket_id=post.id %}">
+                        <button class="btn btn-secondary" type="button" >Créer une critique</button>
+                    </a>
+                    </div>
+    <br>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

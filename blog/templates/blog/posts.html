@@ -5,43 +5,63 @@
     {% comment %} Bloc Ticket {% endcomment %}
     {% for ticket in tickets %}
         <section class="ticket">
-            <div class="ticket__username">Vous avez demandé une critique</div>
+            <div class="ticket__username">Vous avez demandé un ticket</div>
             <div>{{ ticket.time_created }}</div>
-            <h3 class="ticket__title">{{ ticket.title }}</h3>
+            <h3 class="ticket__title">{{ ticket.titre }}</h3>
             <p class="ticket__description">{{ ticket.description }}</p>
             {% if ticket.image %}
                 <img class="ticket__image" src="{{ ticket.image.url }}">
             {% endif %}
-            <strong><a class="btn" href="{% url 'ticket_change' ticket.pk %}">Modifier</a></strong>
+            <strong><a class="btn" href="{% url 'ticket_edit' ticket.pk %}">Modifier</a></strong>
             <strong><a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer</a></strong>
         </section>
     {% endfor %}
 
-    {% comment %} Bloc review {% endcomment %}
-    {% for review in reviews %}
-        <section class="review">
-                <div class="review__usernameAndDate"></div>
-                <div>Vous avez publié une critique</div>
+    {% comment %} Bloc Ticket {% endcomment %}
+        {% for review in reviews %}
+            <section class="review">
+                <div class="review__username">Vous avez demandé une critique</div>
                 <div>{{ review.time_created }}</div>
-                <h3>{{ review.headline }}</h3>
-                <div>Note: {{review.rating}}<span> ☆</span>
-                </div>
-                <div>{{ review.body }}</div>
-                <strong><a class="btn" href="{% url 'review-update' review.pk %}">Modifier</a></strong>
-                <strong><a class="btn" href="{% url 'review-delete' review.pk %}">Supprimer</a></strong>
-            <section class="ticket">
-                <div class="ticket__usernameAndDate"></div>
-                {% if review.ticket.user == current_user %}
-                    <div>Vous avez demandé une critique</div>
-                {% else %}
-                    <div>{{review.ticket.user}} a demandé une critique</div>
-                <div>{{review.ticket.time_created}}</div>
-                {% endif %}
-                <h3 class="ticket__title">{{ review.ticket.title }}</h3>
-                <p class="ticket__description">{{ review.ticket.description }}</p>
-                <img class="ticket__image" src="{{ review.ticket.image.url }}">
+                <h3 class="review__title">{{ review.headline }}</h3>
+                <p class="review__description">{{ review.rating }}</p>
             </section>
-        </section>
-    {% endfor %}
+        {% endfor %}
+{% endblock content%}
 
-{% endblock content%}%}
+
+
+
+
+
+
+
+
+
+
+
+<!--       {% for review in reviews %}-->
+<!--            <section class="review">-->
+<!--                    <div class="review__usernameAndDate"></div>-->
+<!--                    <div>Vous avez publié une critique</div>-->
+<!--                    <div>{{ review.time_created }}</div>-->
+<!--                    <h3>{{ review.headline }}</h3>-->
+<!--                    <div>Note: {{review.rating}}<span> ☆</span>-->
+<!--                    </div>-->
+<!--                    <div>{{ review.body }}</div><-->
+<!--                    <strong><a class="btn" href="{% url 'review-update' review.pk %}">Modifier</a></strong>-->
+<!--                    <strong><a class="btn" href="{% url 'review-delete' review.pk %}">Supprimer</a></strong>-->
+<!--                <section class="ticket">-->
+<!--                    <div class="ticket__usernameAndDate"></div>-->
+<!--                    {% if review.ticket.user == current_user %}-->
+<!--                        <div>Vous avez demandé une critique</div>-->
+<!--                    {% else %}-->
+<!--                        <div>{{review.ticket.user}} a demandé une critique</div>-->
+<!--                    <div>{{review.ticket.time_created}}</div>-->
+<!--                    {% endif %}-->
+<!--                    <h3 class="ticket__title">{{ review.ticket.title }}</h3>-->
+<!--                    <p class="ticket__description">{{ review.ticket.description }}</p>-->
+<!--                    <img class="ticket__image" src="{{ review.ticket.image.url }}">-->
+<!--                </section>-->
+<!--            </section>-->
+<!--        {% endfor %}-->
+

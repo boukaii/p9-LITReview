@@ -7,7 +7,7 @@ from django.views.generic import View
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from blog.models import UserFollows, Ticket, Review, User
-from blog.forms import TicketForm
+from blog.forms import TicketForm, ReviewForm
 from django.contrib import messages
 from django.db.models.fields import CharField
 from django.db.models import Value, Q
@@ -26,7 +26,7 @@ def login_page(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('flux')
 
         message = 'Identifiants invalides.'
     return render(
@@ -36,9 +36,6 @@ def login_page(request):
 def logout_user(request):
     logout(request)
     return redirect('login')
-
-
-User = get_user_model()
 
 
 def signup_page(request):
@@ -52,48 +49,15 @@ def signup_page(request):
     return render(request, 'blog/signup.html')
 
 
-def create_ticket(request):
-    form = forms.TicketForm()
-    if request.method == 'POST':
-        form = forms.TicketForm(request.POST, request.FILES)
-        if form.is_valid():
-            ticket = form.save(commit=False)
-            ticket.user = request.user
-            ticket.save()
-            return redirect("posts")
-    return render(request, 'blog/ticket.html', context={'form': form})
+def flux(request):
+    tickets = models.Ticket.objects.filter(user=request.user)
+    tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
 
+    reviews = models.Review.objects.filter(user=request.user)
+    reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
 
-def ticket_change(request, ticket_id):
-    title_page = f"Modification du ticket {ticket_id}"
-    ticket = get_object_or_404(Ticket, pk=ticket_id)
-    ticket_form = TicketForm(instance=ticket)
-    if request.method == 'POST':
-        ticket_form = TicketForm(request.POST, request.FILES)
-        if ticket_form.is_valid():
-            ticket.title = ticket_form.cleaned_data['title']
-            ticket.description = ticket_form.cleaned_data['description']
-            if ticket_form.cleaned_data['image']:
-                ticket.image = ticket_form.cleaned_data['image']
-            ticket.save()
-            return redirect('posts')
-    context = {
-        'title_page': title_page,
-        'ticket_form': ticket_form,
-        'ticket': ticket
-    }
-    return render(request, 'blog/posts.html', context)
-
-
-def ticket_delete(request, ticket_id):
-    ticket = get_object_or_404(Ticket, pk=ticket_id)
-    ticket.delete()
-    return redirect('posts')
-
-
-def home(request):
-    photos = models.Ticket.objects.all()
-    return render(request, 'blog/home.html', context={'photo': photos})
+    posts = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
+    return render(request, 'blog/flux.html', context={'posts': posts})
 
 
 def posts(request):
@@ -109,6 +73,37 @@ def posts(request):
                "current_user": current_user,
                }
     return render(request, "blog/posts.html", context)
+
+
+def create_ticket(request):
+    form = forms.TicketForm()
+    if request.method == 'POST':
+        form = forms.TicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            return redirect("posts")
+    return render(request, 'blog/ticket.html', context={'form': form})
+
+
+def ticket_edit(request, ticket_id):
+    ticket = get_object_or_404(models.Ticket, id=ticket_id)
+    form = forms.TicketForm(instance=ticket)
+    if request.method == 'POST':
+        form = forms.TicketForm(request.POST, instance=ticket)
+        if form.is_valid():
+            form.save()
+            return redirect('posts')
+    context = {'edit_form': form, 'ticket': ticket}
+
+    return render(request, 'blog/ticket_edit.html', context)
+
+
+def ticket_delete(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    ticket.delete()
+    return redirect('posts')
 
 
 def follow_view(request):
@@ -145,10 +140,79 @@ def follow_view(request):
     return render(request, 'blog/follow.html', context)
 
 
-def follow_delete(request, followed_by_id, following_id):
-    followed_by = UserFollows.objects.filter(user_id=following_id, followed_user_id=followed_by_id)
+def follow_delete(request, id):
+    followed_by = UserFollows.objects.filter(id=id).first()
     if followed_by:
-        followed_by = UserFollows.objects.get(user_id=following_id, followed_user_id=followed_by_id)
         followed_by.delete()
     return redirect('follow')
+
+
+def create_review(request):
+    title = "Créer une review"
+    if request.method == "POST":
+        try:
+            ticket_instance = Ticket.objects.create(
+                                    title=request.POST['titre'],
+                                    description=request.POST['description'],
+                                    image=request.FILES['image'],
+                                    user=request.user
+                                    )
+            Review.objects.create(ticket=ticket_instance,
+                                  headline=request.POST['headline'],
+                                  rating=request.POST['rating'],
+                                  body=request.POST['body'],
+                                  user=request.user
+                                  )
+        except Exception:
+            print('titi')
+            form_review = ReviewForm(request.POST)
+            form_ticket = TicketForm(request.POST)
+        else:
+            print('toto')
+            messages.success(request, 'Review créée !')
+            return redirect("posts")
+    else:
+        print("tratra")
+        form_review = ReviewForm()
+        form_ticket = TicketForm()
+        return render(request, 'blog/review.html', {'title': title, 'form_review': form_review, 'form_ticket': form_ticket})
+
+
+def review_response_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    title_page = f"Vous répondez au ticket {ticket.titre}"
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST, request.FILES)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket = ticket
+            review.rating = review_form.cleaned_data['rating']
+            review.headline = review_form.cleaned_data['headline']
+            review.body = review_form.cleaned_data['body']
+            review.save()
+            return redirect('flux')
+    else:
+        review_form = ReviewForm()
+
+    context = {
+        'title_page': title_page,
+        'review_form': review_form,
+        'ticket': ticket,
+    }
+
+    return render(request, 'blog/review_response_ticket.html', context)
+
+
+
+
+
+
+# User = get_user_model()
+
+
+# def home(request):
+#     photos = models.Ticket.objects.all()
+#     return render(request, 'blog/home.html', context={'photo': photos})
+
 

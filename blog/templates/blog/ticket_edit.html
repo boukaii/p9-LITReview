@@ -1,19 +1,17 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-    <h2 style="text-align: center;">Modifier un ticket</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form">
-            <p>Titre : {{ form.title }}</p>
-            <p>Description : {{ form.description }}</p>            
-            {% if ticket.image %}
-                <img class="ticket__image" src="{{ ticket.image.url }}">
-            {% endif %}    
-            <p>Changer l'image : {{ form.image }}</p>
-            <div>
-                <input type="submit" value="Envoyer">
-            </div>
-        </div>
-    </form>
-    
+    <div class="form form_ticket">
+        <h2>Modifier le ticket</h2>
+        <form method="POST">
+            {{ edit_form.as_p }}
+            {% csrf_token %}
+            <button class="btn" type="submit" >Sauvegarder</button>
+        </form>
+        <h2>Supprimer le ticket ?</h2>
+        <form method="POST">
+            {{ delete_form}}
+            {% csrf_token %}
+            <a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer</a>
+        </form>
+    </div>
 {% endblock content %}
