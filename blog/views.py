@@ -106,6 +106,82 @@ def ticket_delete(request, ticket_id):
     return redirect('posts')
 
 
+def create_review(request):
+    title = "Créer une review"
+    if request.method == "POST":
+        try:
+            ticket_instance = Ticket.objects.create(
+                                    title=request.POST['titre'],
+                                    description=request.POST['description'],
+                                    image=request.FILES['image'],
+                                    user=request.user
+                                    )
+            Review.objects.create(ticket=ticket_instance,
+                                  headline=request.POST['headline'],
+                                  rating=request.POST['rating'],
+                                  body=request.POST['body'],
+                                  user=request.user
+                                  )
+        except Exception:
+            print('titi')
+            form_review = ReviewForm(request.POST)
+            form_ticket = TicketForm(request.POST)
+        else:
+            print('toto')
+            messages.success(request, 'Review créée !')
+            return redirect("posts")
+    else:
+        print("tratra")
+        form_review = ReviewForm()
+        form_ticket = TicketForm()
+    return render(request, 'blog/review.html', {'form_review': form_review, 'form_ticket': form_ticket})
+
+
+def review_response_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    title_page = f"Vous répondez au ticket {ticket.titre}"
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST, request.FILES)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket = ticket
+            review.rating = review_form.cleaned_data['rating']
+            review.headline = review_form.cleaned_data['headline']
+            review.body = review_form.cleaned_data['body']
+            review.save()
+            return redirect('flux')
+    else:
+        review_form = ReviewForm()
+
+    context = {
+        'title_page': title_page,
+        'review_form': review_form,
+        'ticket': ticket,
+    }
+
+    return render(request, 'blog/review_response_ticket.html', context)
+
+
+def review_edit(request, review_id):
+    review = get_object_or_404(models.Review, id=review_id)
+    form = forms.ReviewForm(instance=review)
+    if request.method == 'POST':
+        form = forms.ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('posts')
+    context = {'edit_form': form, 'review': review}
+
+    return render(request, 'blog/review_edit.html', context)
+
+
+def review_delete(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.delete()
+    return redirect('posts')
+
+
 def follow_view(request):
     page_title = 'Abonnements'
     followed_by = UserFollows.objects.filter(user=request.user)
@@ -145,64 +221,6 @@ def follow_delete(request, id):
     if followed_by:
         followed_by.delete()
     return redirect('follow')
-
-
-def create_review(request):
-    title = "Créer une review"
-    if request.method == "POST":
-        try:
-            ticket_instance = Ticket.objects.create(
-                                    title=request.POST['titre'],
-                                    description=request.POST['description'],
-                                    image=request.FILES['image'],
-                                    user=request.user
-                                    )
-            Review.objects.create(ticket=ticket_instance,
-                                  headline=request.POST['headline'],
-                                  rating=request.POST['rating'],
-                                  body=request.POST['body'],
-                                  user=request.user
-                                  )
-        except Exception:
-            print('titi')
-            form_review = ReviewForm(request.POST)
-            form_ticket = TicketForm(request.POST)
-        else:
-            print('toto')
-            messages.success(request, 'Review créée !')
-            return redirect("posts")
-    else:
-        print("tratra")
-        form_review = ReviewForm()
-        form_ticket = TicketForm()
-        return render(request, 'blog/review.html', {'title': title, 'form_review': form_review, 'form_ticket': form_ticket})
-
-
-def review_response_ticket(request, ticket_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    title_page = f"Vous répondez au ticket {ticket.titre}"
-    if request.method == 'POST':
-        review_form = ReviewForm(request.POST, request.FILES)
-        if review_form.is_valid():
-            review = review_form.save(commit=False)
-            review.user = request.user
-            review.ticket = ticket
-            review.rating = review_form.cleaned_data['rating']
-            review.headline = review_form.cleaned_data['headline']
-            review.body = review_form.cleaned_data['body']
-            review.save()
-            return redirect('flux')
-    else:
-        review_form = ReviewForm()
-
-    context = {
-        'title_page': title_page,
-        'review_form': review_form,
-        'ticket': ticket,
-    }
-
-    return render(request, 'blog/review_response_ticket.html', context)
-
 
 
 
