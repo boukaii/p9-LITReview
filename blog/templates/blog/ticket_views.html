@@ -1,0 +1,30 @@
+{% if post.ticket %}
+    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
+        <div class="col-6">
+            <p class="border-bottom border-light fst-italic"> {{ post.ticket.user }} a demandé un ticket</p>
+            <p class="border-bottom border-light"> {{ post.ticket.titre }}  </p>
+            <p> {{ post.ticket.description }} </p>
+            {% if post.ticket.image %}
+            <img src="{{post.ticket.image.url}}" width="100px" />
+            {% endif %}
+        </div>
+        <div class="col-3 col-center">
+            <p class="small border rounded-pill border-light">{{ post.ticket.time_created|date:"H:i, d F Y" }}</p>
+        </div>
+    </div>
+{% else %}
+
+<!--    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">-->
+<!--        <div class="col-6">-->
+<!--            <p class="border-bottom border-light"> {{ post.user }} a demandé une critique </p>-->
+<!--            <p class="border-bottom border-light"> {{ post.titre }}  </p>-->
+<!--            <p> {{ post.description }} </p>-->
+<!--            {% if post.image %}-->
+<!--            <img src="{{post.image.url}}" width="100px" />-->
+<!--            {% endif %}-->
+<!--        </div>-->
+<!--        <div class="col-3 col-center">-->
+<!--            <p class="small border rounded-pill border-light">{{ post.time_created|date:"H:i, d F Y" }}</p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--{% endif %}-->
