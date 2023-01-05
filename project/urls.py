@@ -31,7 +31,7 @@ urlpatterns = [
     # Page pour créer une critique
     path('review/', blog.views.create_review, name="review"),
     # Page pour créer une critique en fonction d'un ticket
-    path('review_response_ticket/', blog.views.review_response_ticket, name='review_response_ticket'),
+    path('review_ticket/', blog.views.review_ticket, name='review_ticket'),
     # Page pour modifier une critique
     path('<int:review_id>/review_edit/', blog.views.review_edit, name="review_edit"),
     # Page pour supprimer une critique

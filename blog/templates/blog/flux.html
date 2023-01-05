@@ -1,36 +1,24 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<br><br>
 <div class="container">
-    <div class="row ">
-        <div class="col-4 col-center">
-            <a href="{% url 'ticket' %}">
-                <button class="btn btn-secondary" type="button" >Demander une critique</button>
-            </a>
+        <div class="row justify-content-center">
+            <div class="col-6 mt-4">
+                <a href="{% url 'ticket' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Demander une critique</button></a>
+                <a href="{% url 'review' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Créer un critique</button></a>
+            </div>
         </div>
-        <div class="col-4 col-center">
-            <a href="{% url 'review' %}">
-                <button class="btn btn-secondary" type="button" >Créer une critique</button>
-            </a>
-        </div>
-    </div>
 </div>
-<div class="container">
-    <br>
-    {% for post in posts %}
-        {% if post.content_type == 'REVIEW' %}
-            {% include 'blog/review.html' %}
-</div>
-    <br>
-        {% elif post.content_type == 'TICKET' and post.review_of.all.count == 0 %}
-                {% include 'blog/ticket.html' %}
-                    <div class="col-3">
-                    <a href="{% url 'review_response_ticket' ticket_id=post.id %}">
-                        <button class="btn btn-secondary" type="button" >Créer une critique</button>
-                    </a>
-                    </div>
-    <br>
+        <br><br>
+   {% for post in posts %}
+        <div class="container-flux">
+        <div class="row justify-content-center">
+        {% if post.content_type == "TICKET" %}
+            {% include 'blog/ticket_views.html' %}
         {% endif %}
+        {% if post.content_type == "REVIEW" %}
+            {% include 'blog/review_views.html' %}
+        {% endif %}
+        </div>
+        </div>
     {% endfor %}
-{% endblock %}
+{% endblock content %}

@@ -50,14 +50,30 @@ def signup_page(request):
 
 
 def flux(request):
-    tickets = models.Ticket.objects.filter(user=request.user)
-    tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
+    following = UserFollows.objects.filter(user__exact=request.user)
+    tickets = models.Ticket.objects.filter(
+        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+    )
+    reviews = models.Review.objects.filter(
+        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+    )
 
-    reviews = models.Review.objects.filter(user=request.user)
-    reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
+    tickets = tickets.annotate(contente_type=Value("TICKET", CharField()))
+    reviews = reviews.annotate(contente_type=Value("REVIEW", CharField()))
 
     posts = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
-    return render(request, 'blog/flux.html', context={'posts': posts})
+    return render(request, "blog/flux.html", context={"posts": posts})
+
+
+# def flux(request):
+#     tickets = models.Ticket.objects.filter(Q(user=request.user))
+#     tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
+#
+#     reviews = models.Review.objects.filter(Q(user=request.user))
+#     reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
+#
+#     post = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
+#     return render(request, 'blog/flux.html', context={'posts': post})
 
 
 def posts(request):
@@ -69,7 +85,7 @@ def posts(request):
     reviews = Review.objects.filter(user=current_user)
     context = {"title": title,
                "tickets": tickets,
-               "reviews": reviews,
+               "review": reviews,
                "current_user": current_user,
                }
     return render(request, "blog/posts.html", context)
@@ -137,7 +153,7 @@ def create_review(request):
     return render(request, 'blog/review.html', {'form_review': form_review, 'form_ticket': form_ticket})
 
 
-def review_response_ticket(request, ticket_id):
+def review_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     title_page = f"Vous répondez au ticket {ticket.titre}"
     if request.method == 'POST':
@@ -160,7 +176,7 @@ def review_response_ticket(request, ticket_id):
         'ticket': ticket,
     }
 
-    return render(request, 'blog/review_response_ticket.html', context)
+    return render(request, 'blog/review.html', context)
 
 
 def review_edit(request, review_id):
