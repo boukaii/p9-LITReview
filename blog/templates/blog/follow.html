@@ -3,50 +3,52 @@
 <form method="post" class="form container">
     {% csrf_token %}
     <div class="container">
-        <div class="row">
+        <div class="row justify-content-center">
+            <div class="row">
+                <p></p>
+                <p class="h4 col-center border border-dark bg-secondary text-light">Suivre d'autres utilisateurs</p>
+                <div class="col-10 text-right" ><br>
+                    <input type="text" class="form-control border border-secondary" name="follow_user" placeholder="Nom d'utilisateur"/>
+                </div>
+                <div class="col-2 text-left" ><br>
+                    <button class="btn btn-secondary" value="Submit" type="submit" >Envoyer</button>
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <h5 class="text-light bg-danger small fw-bold fst-italic">{{ message }}</h5>
+                        {% elif message.tags == 'info' %}
+                            <h5 class="text-light bg-secondary small fst-italic">{{ message }}</h5>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
             <p></p>
-            <p class="h4 col-center border border-dark bg-secondary text-light">Suivre d'autres utilisateurs</p>
-            <div class="col-10 text-right" ><br>
-                <input type="text" class="form-control border border-secondary" name="follow_user" placeholder="Nom d'utilisateur"/>
-            </div>
-            <div class="col-2 text-left" ><br>
-                <button class="btn btn-secondary" value="Submit" type="submit" >Envoyer</button>
-            </div>
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == 'error' %}
-                        <h5 class="text-light bg-danger small fw-bold fst-italic">{{ message }}</h5>
-                    {% elif message.tags == 'info' %}
-                        <h5 class="text-light bg-secondary small fst-italic">{{ message }}</h5>
-                    {% endif %}
+            <div class="row">
+                <p class="h4 col-center border border-dark bg-secondary text-light">Abonnements</p>
+                <p></p>
+                {% for user_followed in followed_by %}
+                    <div class="col-10 border border-secondary bg-light" >
+                        <p>{{ user_followed.followed_user }}</p>
+                    </div>
+                    <div class="col-2 text-left" >
+                        <a href="{% url 'follow_delete' id=user_followed.id   %}" onclick="return confirm(
+                        'Etes-vous sûr de supprimer cet abonnement ?');">
+                        <button class="btn btn-secondary" value="delete" type="button" >Supprimer</button>
+                        </a>
+                    </div>
                 {% endfor %}
-            {% endif %}
-        </div>
-        <p></p>
-        <div class="row">
-            <p class="h4 col-center border border-dark bg-secondary text-light">Abonnements</p>
-            <p></p>
-            {% for user_followed in followed_by %}
-                <div class="col-10 border border-secondary bg-light" >
-                    <p>{{ user_followed.followed_user }}</p>
-                </div>
-                <div class="col-2 text-left" >
-                    <a href="{% url 'follow_delete' id=user_followed.id   %}" onclick="return confirm(
-                    'Etes-vous sûr de supprimer cet abonnement ?');">
-                    <button class="btn btn-secondary" value="delete" type="button" >Supprimer</button>
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="row">
-            <p></p>
-            <p class="h4 h4 col-center border border-dark bg-secondary text-light">Abonnés</p>
-            <p></p>
-            {% for user_following in following %}
-            <div class="col-12 border border-secondary bg-light" >
-                <p>{{ user_following.user }}</p>
             </div>
-            {% endfor %}
+            <div class="row">
+                <p></p>
+                <p class="h4 h4 col-center border border-dark bg-secondary text-light">Abonnés</p>
+                <p></p>
+                {% for user_following in following %}
+                <div class="col-12 border border-secondary bg-light" >
+                    <p>{{ user_following.user }}</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </form>

@@ -1,24 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-6 mt-4">
-                <a href="{% url 'ticket' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Demander une critique</button></a>
-                <a href="{% url 'review' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Créer un critique</button></a>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-6 mt-4">
+            <a href="{% url 'ticket' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Demander une critique</button></a>
+            <a href="{% url 'review' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Créer un critique</button></a>
         </div>
+    </div>
 </div>
-        <br><br>
-   {% for post in posts %}
-        <div class="container-flux">
-        <div class="row justify-content-center">
-        {% if post.content_type == "TICKET" %}
-            {% include 'blog/ticket_views.html' %}
-        {% endif %}
-        {% if post.content_type == "REVIEW" %}
-            {% include 'blog/review_views.html' %}
-        {% endif %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6 mt-4">
+            {% for ticket in tickets %}
+                {% include 'blog/_tickets.html' %}
+                {% for review in ticket.reviews.all %}
+                    {% include 'blog/_reviews.html' %}
+                    {{ review.pk }}
+                {% empty %}
+                <a class="button-flux" href="{% url 'review_ticket' ticket.id %}"><button type="submit" > Créer une critique </button></a>
+                {% endfor %}
+            {% endfor %}
         </div>
-        </div>
-    {% endfor %}
+    </div>
+</div>
 {% endblock content %}
+

@@ -1,0 +1,16 @@
+<div class="col-7 mt-4">
+    <div class="card w-75">
+      <div class="card-body">
+          <p class="user">{{ review.user }} a publié une critique en réponse au ticket {{ ticket.user }}</p>
+          <h2 class="text-titre">{{ review.headline }} - review {{ rating }}</h2>
+          <P class="rating">{{ review.rating }}</P>
+          <p class="date_review">{{ review.time_created }}</p>
+          <h3 class="text-titre"> {{ review.body }} </h3>
+            <div class="card-body">
+                <h4 class="text-titre">Ticket de {{ ticket.user }}</h4>
+                <h4 class="text-titre">{{ ticket.titre }}</h4>
+                <img class="card-img-bottom" src="{{ ticket.image.url }}" alt="Card image cap">
+            </div>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
+    <div class="col-6">
+        <p class="border-bottom border-light fst-italic"> {{ ticket.user }} a demandé un ticket </p>
+        <p class="border-bottom border-light"> {{ ticket.titre }}  </p>
+        <p> {{ ticket.description }} </p>
+        {% if ticket.image %}
+        <img src="{{ticket.image.url}}" width="100px" />
+        {% endif %}
+    </div>
+    <div class="col-3 col-center">
+        <p class="small border rounded-pill border-light">{{ ticket.time_created|date:"H:i, d F Y" }}</p>
+    </div>
+</div>
