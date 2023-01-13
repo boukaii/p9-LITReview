@@ -54,26 +54,15 @@ def flux(request):
     tickets = models.Ticket.objects.filter(
         Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
     )
-    reviews = models.Review.objects.filter(
-        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
-    )
-
-    tickets = tickets.annotate(contente_type=Value("TICKET", CharField()))
-    reviews = reviews.annotate(contente_type=Value("REVIEW", CharField()))
-
-    posts = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
-    return render(request, "blog/flux.html", context={"posts": posts})
-
-
-# def flux(request):
-#     tickets = models.Ticket.objects.filter(Q(user=request.user))
-#     tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
-#
-#     reviews = models.Review.objects.filter(Q(user=request.user))
-#     reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
-#
-#     post = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
-#     return render(request, 'blog/flux.html', context={'posts': post})
+    # reviews = models.Review.objects.filter(
+    #     Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+    # )
+    #
+    # tickets = tickets.annotate(contente_type=Value("TICKET", CharField()))
+    # reviews = reviews.annotate(contente_type=Value("REVIEW", CharField()))
+    print(tickets)
+    # posts = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
+    return render(request, "blog/flux.html", context={'tickets': tickets})
 
 
 def posts(request):
@@ -85,7 +74,7 @@ def posts(request):
     reviews = Review.objects.filter(user=current_user)
     context = {"title": title,
                "tickets": tickets,
-               "review": reviews,
+               "reviews": reviews,
                "current_user": current_user,
                }
     return render(request, "blog/posts.html", context)
@@ -123,34 +112,33 @@ def ticket_delete(request, ticket_id):
 
 
 def create_review(request):
-    title = "Créer une review"
-    if request.method == "POST":
-        try:
-            ticket_instance = Ticket.objects.create(
-                                    title=request.POST['titre'],
-                                    description=request.POST['description'],
-                                    image=request.FILES['image'],
-                                    user=request.user
-                                    )
-            Review.objects.create(ticket=ticket_instance,
-                                  headline=request.POST['headline'],
-                                  rating=request.POST['rating'],
-                                  body=request.POST['body'],
-                                  user=request.user
-                                  )
-        except Exception:
-            print('titi')
-            form_review = ReviewForm(request.POST)
-            form_ticket = TicketForm(request.POST)
-        else:
-            print('toto')
-            messages.success(request, 'Review créée !')
-            return redirect("posts")
-    else:
-        print("tratra")
-        form_review = ReviewForm()
-        form_ticket = TicketForm()
-    return render(request, 'blog/review.html', {'form_review': form_review, 'form_ticket': form_ticket})
+    ticket_form = forms.TicketForm()
+    review_form = forms.ReviewForm()
+    if request.method == 'POST':
+        ticket_form = forms.TicketForm(request.POST, request.FILES)
+        review_form = forms.ReviewForm(request.POST)
+        if all([ticket_form.is_valid(), review_form.is_valid()]):
+            ticket = ticket_form.save(commit=False)
+            ticket.user = request.user
+            if ticket_form.cleaned_data['image']:
+                ticket.image = ticket_form.cleaned_data['image']
+            ticket.has_review = True
+            ticket.save()
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket = get_object_or_404(models.Ticket, id=ticket.id)
+            review.save()
+            return redirect('posts')
+    context = {
+        'ticket': True,
+        'ticket_form': ticket_form,
+        'review_form': review_form
+    }
+    return render(
+        request,
+        'blog/review.html',
+        context
+    )
 
 
 def review_ticket(request, ticket_id):
@@ -166,7 +154,7 @@ def review_ticket(request, ticket_id):
             review.headline = review_form.cleaned_data['headline']
             review.body = review_form.cleaned_data['body']
             review.save()
-            return redirect('flux')
+            return redirect('posts')
     else:
         review_form = ReviewForm()
 
@@ -240,8 +228,6 @@ def follow_delete(request, id):
 
 
 
-
-
 # User = get_user_model()
 
 
@@ -250,3 +236,12 @@ def follow_delete(request, id):
 #     return render(request, 'blog/home.html', context={'photo': photos})
 
 
+# def flux(request):
+#     tickets = models.Ticket.objects.filter(Q(user=request.user))
+#     tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
+#
+#     reviews = models.Review.objects.filter(Q(user=request.user))
+#     reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
+#
+#     post = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
+#     return render(request, 'blog/flux.html', context={'posts': post})

@@ -31,7 +31,7 @@ urlpatterns = [
     # Page pour créer une critique
     path('review/', blog.views.create_review, name="review"),
     # Page pour créer une critique en fonction d'un ticket
-    path('review_ticket/', blog.views.review_ticket, name='review_ticket'),
+    path('<int:ticket_id>/review_ticket/', blog.views.review_ticket, name='review_ticket'),
     # Page pour modifier une critique
     path('<int:review_id>/review_edit/', blog.views.review_edit, name="review_edit"),
     # Page pour supprimer une critique
@@ -44,14 +44,3 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
-
-
-# path('logout/', authentication.views.logout_user, name='logout'),
-# path('home/', blog.views.home, name='home'),
-# path('test', LoginView.as_view(
-#         template_name='blog/login.html',
-#         redirect_authenticated_user=True),
-#         name='login'),

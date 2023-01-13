@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
     <h2 style="text-align: center;">Vos Posts</h2>
-
     {% comment %} Bloc Ticket {% endcomment %}
     {% for ticket in tickets %}
         <section class="ticket">
@@ -12,20 +11,23 @@
             {% if ticket.image %}
                 <img class="ticket__image" src="{{ ticket.image.url }}">
             {% endif %}
-            <strong><a class="btn" href="{% url 'ticket_edit' ticket.pk %}">Modifier</a></strong>
-            <strong><a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer</a></strong>
+            <strong><a class="btn" href="{% url 'ticket_edit' ticket.pk %}">Modifier le ticket</a></strong>
+            <strong><a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer le ticket</a></strong>
         </section>
     {% endfor %}
 
-    {% comment %} Bloc Ticket {% endcomment %}
-        {% for review in reviews %}
-            <section class="review">
-                <div class="review__username">Vous avez demandé une critique</div>
-                <div>{{ review.time_created }}</div>
-                <h3 class="review__title">{{ review.headline }}</h3>
-                <p class="review__description">{{ review.rating }}</p>
-            </section>
-        {% endfor %}
+    {% comment %} Bloc Review {% endcomment %}
+    {% for review in reviews %}
+        <section class="review">
+            <div class="review__username">Vous avez demandé une critique</div>
+            <div>{{ review.time_created }}</div>
+            <h3 class="review__headline">{{ review.headline }}</h3>
+            <p class="review__rating">{{ review.rating }}</p>
+            <p class="review__body">{{ review.body}}</p>
+            <strong><a class="btn" href="{% url 'review_edit' review.pk %}">Modifier la critique</a></strong>
+            <strong><a class="btn" href="{% url 'review_delete' review.pk %}">Supprimer la critique</a></strong>
+        </section>
+    {% endfor %}
 {% endblock content%}
 
 
