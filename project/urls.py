@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.urls import path
 import blog.views
-from django.contrib.auth.views import LoginView
-from blog.views import create_ticket, posts, follow_view, create_review, flux
 from django.conf import settings
 from django.conf.urls.static import static
 
