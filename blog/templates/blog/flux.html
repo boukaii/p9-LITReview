@@ -3,26 +3,17 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-6 mt-4">
-            <a href="{% url 'ticket' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Demander une critique</button></a>
-            <a href="{% url 'review' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Créer un critique</button></a>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-6 mt-4">
-            {% for ticket in tickets %}
-                {% include 'blog/_tickets.html' %}
-                {% for review in ticket.reviews.all %}
-                    {% include 'blog/_reviews.html' %}
-                    {{ review.pk }}
-                {% empty %}
-                <a class="button-flux" href="{% url 'review_ticket' ticket.id %}"><button type="submit" > Créer une critique </button></a>
-                {% endfor %}
+        <a href="{% url 'ticket' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Demander une critique</button></a>
+        <a href="{% url 'review' %}"><button class="button-critique-flux" type="submit" style="width: 12rem;">Créer un critique</button></a>
+        {% for ticket in tickets %}
+            {% include 'blog/_tickets.html' %}
+            {% for review in ticket.review_set.all %}
+                {% include 'blog/_reviews.html' %}
+            {% empty %}
+            <a class="button-flux" href="{% url 'review_ticket' ticket.id %}"><button type="submit" > Créer une critique afin de répondre a ce ticket</button></a>
             {% endfor %}
+        {% endfor %}
         </div>
     </div>
 </div>
 {% endblock content %}
-
