@@ -1,69 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container">
     <h2 style="text-align: center;">Vos Posts</h2>
-    {% comment %} Bloc Ticket {% endcomment %}
-    {% for ticket in tickets %}
-        <section class="ticket">
-            <div class="ticket__username">Vous avez demandé un ticket</div>
-            <div>{{ ticket.time_created }}</div>
-            <h3 class="ticket__title">{{ ticket.titre }}</h3>
-            <p class="ticket__description">{{ ticket.description }}</p>
+    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
+        {% for ticket in tickets %}
+            <div class="container">
+            <div class="row justify-content-center">
+            <div class="col-6 mt-4">
+            <div class="border-bottom border-light fst-italic">Vous avez publié un ticket</div>
+            <div class="border-bottom border-light fst-italic">{{ ticket.time_created }}</div>
+            <h3 class="border-bottom border-light fst-italic">{{ ticket.titre }}</h3>
+            <p class="border-bottom border-light fst-italic">{{ ticket.description }}</p>
             {% if ticket.image %}
                 <img class="ticket__image" src="{{ ticket.image.url }}">
             {% endif %}
-            <strong><a class="btn" href="{% url 'ticket_edit' ticket.pk %}">Modifier le ticket</a></strong>
-            <strong><a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer le ticket</a></strong>
-        </section>
-    {% endfor %}
-
-    {% comment %} Bloc Review {% endcomment %}
-    {% for review in reviews %}
-        <section class="review">
-            <div class="review__username">Vous avez demandé une critique</div>
-            <div>{{ review.time_created }}</div>
-            <h3 class="review__headline">{{ review.headline }}</h3>
-            <p class="review__rating">{{ review.rating }}</p>
-            <p class="review__body">{{ review.body}}</p>
-            <strong><a class="btn" href="{% url 'review_edit' review.pk %}">Modifier la critique</a></strong>
-            <strong><a class="btn" href="{% url 'review_delete' review.pk %}">Supprimer la critique</a></strong>
-        </section>
-    {% endfor %}
-{% endblock content%}
-
-
-
-
-
-
-
-
-
-
-
-
-<!--       {% for review in reviews %}-->
-<!--            <section class="review">-->
-<!--                    <div class="review__usernameAndDate"></div>-->
-<!--                    <div>Vous avez publié une critique</div>-->
-<!--                    <div>{{ review.time_created }}</div>-->
-<!--                    <h3>{{ review.headline }}</h3>-->
-<!--                    <div>Note: {{review.rating}}<span> ☆</span>-->
-<!--                    </div>-->
-<!--                    <div>{{ review.body }}</div><-->
-<!--                    <strong><a class="btn" href="{% url 'review-update' review.pk %}">Modifier</a></strong>-->
-<!--                    <strong><a class="btn" href="{% url 'review-delete' review.pk %}">Supprimer</a></strong>-->
-<!--                <section class="ticket">-->
-<!--                    <div class="ticket__usernameAndDate"></div>-->
-<!--                    {% if review.ticket.user == current_user %}-->
-<!--                        <div>Vous avez demandé une critique</div>-->
-<!--                    {% else %}-->
-<!--                        <div>{{review.ticket.user}} a demandé une critique</div>-->
-<!--                    <div>{{review.ticket.time_created}}</div>-->
-<!--                    {% endif %}-->
-<!--                    <h3 class="ticket__title">{{ review.ticket.title }}</h3>-->
-<!--                    <p class="ticket__description">{{ review.ticket.description }}</p>-->
-<!--                    <img class="ticket__image" src="{{ review.ticket.image.url }}">-->
-<!--                </section>-->
-<!--            </section>-->
-<!--        {% endfor %}-->
-
+            <a class="btn" href="{% url 'ticket_edit' ticket.pk %}"><button type="submit" > Modifier le ticket </button></a>
+            <a class="btn" href="{% url 'ticket_delete' ticket.pk %}"><button type="submit" > Supprimer le ticket </button></a>
+    </div>
+</div>
+            {% for review in ticket.review_set.all %}
+                {% include 'blog/_reviews.html' %}
+                <a class="btn" href="{% url 'review_edit' review.pk %}"><button type="submit">Modifier la critique</button></a>
+                <a class="btn" href="{% url 'review_delete' review.pk %}"><button type="submit">Supprimer la critique</button></a>
+            {% empty %}
+            <a class="button-flux" href="{% url 'review_ticket' ticket.id %}"><button type="submit" > Créer une critique </button></a>
+            {% endfor %}
+        {% endfor %}
+            </div>
+            </div>
+            </div>
+{% endblock content %}
