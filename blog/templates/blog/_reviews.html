@@ -1,16 +1,72 @@
-<div class="col-7 mt-4">
-    <div class="card w-75">
-      <div class="card-body">
-          <p class="user">{{ review.user }} a publié une critique en réponse au ticket {{ ticket.user }}</p>
-          <h2 class="text-titre">{{ review.headline }} - review {{ rating }}</h2>
-          <P class="rating">{{ review.rating }}</P>
-          <p class="date_review">{{ review.time_created }}</p>
-          <h3 class="text-titre"> {{ review.body }} </h3>
+<div class="container">
+    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
+        <div class="col-6">
+            <p class="user">{{ review.user }} a publié une critique en réponse au ticket {{ ticket.user }}</p>
+            <h2 class="text-titre">{{ review.headline }} - review {{ rating }}</h2>
+            <P class="rating">{{ review.rating }}</P>
+            {% load static %}
+            {% if review.rating == 0 %}
+            <p>
+                <span>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png'%}" width='30px'>
+                </span>
+            {% elif review.rating == 1 %}
+                <span>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                </span>
+            {% elif review.rating == 2 %}
+                <span>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                </span>
+            {% elif review.rating == 3 %}
+                <span>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                </span>
+            {% elif review.rating == 4 %}
+                <span>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_blanche.png' %}" width='30px'>
+                </span>
+            {% elif review.rating == 5 %}
+                <span>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                    <img src="{% static 'img/etoile_noire.png' %}" width='30px'>
+                </span>
+            </p>
+            {% endif %}
+            <p class="date_review">{{ review.time_created }}</p>
+            <h3 class="text-titre"> {{ review.body }} </h3>
             <div class="card-body">
+                <h4> Voici le ticket en question : </h4>
                 <h4 class="text-titre">Ticket de {{ ticket.user }}</h4>
                 <h4 class="text-titre">{{ ticket.titre }}</h4>
-                <img class="card-img-bottom" src="{{ ticket.image.url }}" alt="Card image cap">
+                <h4 class="text-titre">{{ ticket.description}}</h4>
+                {% if ticket.image %}
+                    <img src="{{ticket.image.url}}" width="300px" />
+                {% endif %}
             </div>
-      </div>
+        </div>
     </div>
 </div>
