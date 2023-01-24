@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="form form_ticket">
-        <h2>Modifier le ticket</h2>
-        <form method="POST">
-            {{ edit_form.as_p }}
-            {% csrf_token %}
-            <button class="btn" type="submit" >Sauvegarder</button>
-        </form>
-        <h2>Supprimer le ticket ?</h2>
-        <form method="POST">
-            {{ delete_form}}
-            {% csrf_token %}
-            <a class="btn" href="{% url 'ticket_delete' ticket.pk %}">Supprimer</a>
-        </form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6 mt-4">
+            <div class="form form_ticket">
+                <h2>Modifier le ticket</h2>
+                <form method="POST">
+                    {{ edit_form.as_p }}
+                    {% csrf_token %}
+                    <a class="btn" href="{% url 'ticket_edit' ticket.pk %}"><button type="submit" > Modifier le ticket </button></a>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock content %}
