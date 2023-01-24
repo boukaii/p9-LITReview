@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post">
-        {{ form.as_p }}
-        {% csrf_token %}
-        <button type="submit" >Se connecter</button>
-    </form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6 mt-4">
+            <form method="post">
+                {{ form.as_p }}
+                {% csrf_token %}
+                <button type="submit" >Se connecter</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock content %}
