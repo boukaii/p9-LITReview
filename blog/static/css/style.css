@@ -1,11 +1,15 @@
-.container {
-  display: flex;
-  justify-content: space-evenly;
-  text-align: center;
+.container-fluid{
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
-body {
-    background-color: #000000;
-    color: white;
+h1 {
+    text-align: center
+}
+
+.container {
+   text-align: center
 
 }
