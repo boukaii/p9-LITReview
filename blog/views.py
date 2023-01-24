@@ -1,17 +1,13 @@
-from django.shortcuts import redirect, render
-from django.contrib.auth import login, authenticate, logout, get_user_model
-from . import forms
 from django.contrib.auth.decorators import login_required
+from . import forms
 from . import models
-from django.views.generic import View
-from django.conf import settings
+from django.contrib.auth import login, authenticate, logout
+from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
 from blog.models import UserFollows, Ticket, Review, User
-from blog.forms import TicketForm, ReviewForm
+from blog.forms import ReviewForm
 from django.contrib import messages
-from django.db.models.fields import CharField
-from django.db.models import Value, Q
-from itertools import chain
+from django.db.models import Q
 
 
 def login_page(request):
@@ -42,29 +38,32 @@ def signup_page(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        user = User.objects.create_user(username=username, password=password)
+        password1 = request.POST.get("password1")
+        if password != password1:
+            messages.error(request, "Les mots de passe fournit ne correspondent pas")
+            return redirect('signup')
+        user = User.objects.create_user(username=username, password=password1)
+        messages.info(request, f"Création du compte {user.username} effectuée.")
         # auto-login user
-        login(request, user)
-        return redirect('login')
+        # login(request, user)
+        # return redirect('login')
     return render(request, 'blog/signup.html')
 
 
+@login_required
 def flux(request):
     following = UserFollows.objects.filter(user__exact=request.user)
     tickets = models.Ticket.objects.filter(
         Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
     )
-    # reviews = models.Review.objects.filter(
-    #     Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
-    # )
-    #
-    # tickets = tickets.annotate(contente_type=Value("TICKET", CharField()))
-    # reviews = reviews.annotate(contente_type=Value("REVIEW", CharField()))
+    reviews = models.Review.objects.filter(
+        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+    )
     print(tickets)
-    # posts = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
-    return render(request, "blog/flux.html", context={'tickets': tickets})
+    return render(request, "blog/flux.html", context={'tickets': tickets, 'reviews': reviews})
 
 
+@login_required
 def posts(request):
     title = "Posts"
     current_user = request.user
@@ -80,6 +79,7 @@ def posts(request):
     return render(request, "blog/posts.html", context)
 
 
+@login_required
 def create_ticket(request):
     form = forms.TicketForm()
     if request.method == 'POST':
@@ -92,6 +92,7 @@ def create_ticket(request):
     return render(request, 'blog/ticket.html', context={'form': form})
 
 
+@login_required
 def ticket_edit(request, ticket_id):
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     form = forms.TicketForm(instance=ticket)
@@ -101,16 +102,17 @@ def ticket_edit(request, ticket_id):
             form.save()
             return redirect('posts')
     context = {'edit_form': form, 'ticket': ticket}
-
     return render(request, 'blog/ticket_edit.html', context)
 
 
+@login_required
 def ticket_delete(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
     ticket.delete()
     return redirect('posts')
 
 
+@login_required
 def create_review(request):
     ticket_form = forms.TicketForm()
     review_form = forms.ReviewForm()
@@ -134,17 +136,19 @@ def create_review(request):
         'ticket_form': ticket_form,
         'review_form': review_form
     }
-    return render(
-        request,
-        'blog/review.html',
-        context
-    )
+    return render(request, 'blog/review.html', context)
 
 
+@login_required
 def review_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    form = forms.TicketForm(instance=ticket)
     title_page = f"Vous répondez au ticket {ticket.titre}"
     if request.method == 'POST':
+        # if request.method == 'POST':
+        form = forms.TicketForm(request.POST, instance=ticket)
+        if form.is_valid():
+            form.save()
         review_form = ReviewForm(request.POST, request.FILES)
         if review_form.is_valid():
             review = review_form.save(commit=False)
@@ -157,16 +161,16 @@ def review_ticket(request, ticket_id):
             return redirect('posts')
     else:
         review_form = ReviewForm()
-
     context = {
         'title_page': title_page,
         'review_form': review_form,
         'ticket': ticket,
+        'test_form': form
     }
-
     return render(request, 'blog/review.html', context)
 
 
+@login_required
 def review_edit(request, review_id):
     review = get_object_or_404(models.Review, id=review_id)
     form = forms.ReviewForm(instance=review)
@@ -180,12 +184,14 @@ def review_edit(request, review_id):
     return render(request, 'blog/review_edit.html', context)
 
 
+@login_required
 def review_delete(request, review_id):
     review = get_object_or_404(Review, pk=review_id)
     review.delete()
     return redirect('posts')
 
 
+@login_required
 def follow_view(request):
     page_title = 'Abonnements'
     followed_by = UserFollows.objects.filter(user=request.user)
@@ -220,28 +226,9 @@ def follow_view(request):
     return render(request, 'blog/follow.html', context)
 
 
+@login_required
 def follow_delete(request, id):
     followed_by = UserFollows.objects.filter(id=id).first()
     if followed_by:
         followed_by.delete()
     return redirect('follow')
-
-
-
-# User = get_user_model()
-
-
-# def home(request):
-#     photos = models.Ticket.objects.all()
-#     return render(request, 'blog/home.html', context={'photo': photos})
-
-
-# def flux(request):
-#     tickets = models.Ticket.objects.filter(Q(user=request.user))
-#     tickets = tickets.annotate(contente_type=Value('TICKET', CharField()))
-#
-#     reviews = models.Review.objects.filter(Q(user=request.user))
-#     reviews = reviews.annotate(contente_type=Value('REVIEW', CharField()))
-#
-#     post = sorted(chain(tickets, reviews), key=lambda x: x.time_created, reverse=True)
-#     return render(request, 'blog/flux.html', context={'posts': post})
