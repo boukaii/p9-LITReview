@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="form form_review">
-        <h2>Modifier la critique</h2>
-        <form method="POST">
-            {{ edit_form.as_p }}
-            {% csrf_token %}
-            <button class="btn" type="submit" >Sauvegarder</button>
-        </form>
-        <h2>Supprimer la critique ?</h2>
-        <form method="POST">
-            {{ delete_form}}
-            {% csrf_token %}
-            <a class="btn" href="{% url 'review_delete' review.pk %}">Supprimer</a>
-        </form>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6 mt-4">
+            <div class="form form_review">
+                <h2>Modifier la critique</h2>
+                <form method="POST">
+                    {{ edit_form.as_p }}
+                    {% csrf_token %}
+                    <a class="btn" href="{% url 'review_edit' review.pk %}"><button type="submit" >Sauvegarder</button></a>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock content %}
