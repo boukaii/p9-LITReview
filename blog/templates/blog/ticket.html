@@ -6,7 +6,7 @@
             <h2 style="text-align: center;">Nouveau ticket</h2>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form_ticket.as_p }}
                 <button type="submit"> Envoyer </button>
             </form>
         </div>
