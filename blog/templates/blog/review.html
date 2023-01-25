@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="form form__review">
-        <h2>Publier une critique</h2>
-        {% if ticket %}
-            <form method="post" enctype="multipart/form-data">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <h2>Publier une critique</h2>
+            {% if ticket %}
+                <form method="post" enctype="multipart/form-data">
                 <h4>A propos de ce livre:</h4>
-                {{ ticket_form.as_p }}
-                <h4>Ma critique:</h4>
-                {{ review_form.as_p }}
-                {% csrf_token %}
-                <input class="btn" type="submit" value="Soumettre">
+                {{ form_is_ticket.as_p }}
+                </form>
+            {% endif %}
+            {{ ticket_form.as_p }}
+            <form method="post" enctype="multipart/form-data">
+            <h4>Ma critique:</h4>
+            {{ review_form.as_p }}
+            {% csrf_token %}
+            <button type="submit" >Soumettre</button>
             </form>
-        {% endif %}
+        </div>
     </div>
+</div>
 {% endblock content %}
