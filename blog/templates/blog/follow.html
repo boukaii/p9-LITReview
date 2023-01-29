@@ -23,7 +23,10 @@
                     {% endfor %}
                 {% endif %}
             </div>
-            <p></p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
             <div class="row">
                 <p class="h4 col-center border border-dark bg-secondary text-light">Abonnements</p>
                 <p></p>
@@ -34,12 +37,11 @@
                     <div class="col-2 text-left" >
                         <a href="{% url 'follow_delete' id=user_followed.id   %}" onclick="return confirm(
                         'Etes-vous sûr de supprimer cet abonnement ?');">
-                        <button class="btn btn-secondary" value="delete" type="button" >Supprimer</button>
+                        <button class="btn btn-secondary" value="Submit" type="submit" >Envoyer</button>
                         </a>
                     </div>
                 {% endfor %}
-            </div>
-            <div class="row">
+
                 <p></p>
                 <p class="h4 h4 col-center border border-dark bg-secondary text-light">Abonnés</p>
                 <p></p>
