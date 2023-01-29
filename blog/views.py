@@ -40,10 +40,12 @@ def signup_page(request):
         password = request.POST.get("password")
         password1 = request.POST.get("password1")
         if password != password1:
-            messages.error(request, "Les mots de passe fournit ne correspondent pas")
+            messages.error(request,
+                           "Les mots de passe fournit ne correspondent pas")
             return redirect('signup')
         user = User.objects.create_user(username=username, password=password1)
-        messages.info(request, f"Création du compte {user.username} effectuée.")
+        messages.info(request, f"Création du compte {user.username}"
+                               f" effectuée.")
         # auto-login user
         # login(request, user)
         # return redirect('login')
@@ -54,13 +56,16 @@ def signup_page(request):
 def flux(request):
     following = UserFollows.objects.filter(user__exact=request.user)
     tickets = models.Ticket.objects.filter(
-        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+        Q(user=request.user)
+        | Q(user__id__in=following.values_list("followed_user"))
     )
     reviews = models.Review.objects.filter(
-        Q(user=request.user) | Q(user__id__in=following.values_list("followed_user"))
+        Q(user=request.user)
+        | Q(user__id__in=following.values_list("followed_user"))
     )
     print(tickets)
-    return render(request, "blog/flux.html", context={'tickets': tickets, 'reviews': reviews})
+    return render(request, "blog/flux.html", context={'tickets': tickets,
+                                                      'reviews': reviews})
 
 
 @login_required
@@ -89,7 +94,7 @@ def create_ticket(request):
             ticket.user = request.user
             ticket.save()
             return redirect("posts")
-    return render(request, 'blog/ticket.html', context={'form': form})
+    return render(request, 'blog/ticket.html', context={'form_ticket': form})
 
 
 @login_required
@@ -145,7 +150,6 @@ def review_ticket(request, ticket_id):
     form = forms.TicketForm(instance=ticket)
     title_page = f"Vous répondez au ticket {ticket.titre}"
     if request.method == 'POST':
-        # if request.method == 'POST':
         form = forms.TicketForm(request.POST, instance=ticket)
         if form.is_valid():
             form.save()
@@ -165,7 +169,7 @@ def review_ticket(request, ticket_id):
         'title_page': title_page,
         'review_form': review_form,
         'ticket': ticket,
-        'test_form': form
+        'form_is_ticket': form
     }
     return render(request, 'blog/review.html', context)
 
@@ -195,12 +199,13 @@ def review_delete(request, review_id):
 def follow_view(request):
     page_title = 'Abonnements'
     followed_by = UserFollows.objects.filter(user=request.user)
-    following = UserFollows.objects.filter(followed_user=request.user)
+    following = models.UserFollows.objects.filter(followed_user=request.user)
 
     if request.method == 'POST':
         follow_user = request.POST.get('follow_user')
         if follow_user == request.user.username:
-            messages.error(request, "Vous ne pouvez pas vous abonner à vous-même")
+            messages.error(request,
+                           "Vous ne pouvez pas vous abonner à vous-même")
             return redirect('follow')
 
         existing_user = User.objects.filter(username=follow_user)
@@ -208,14 +213,20 @@ def follow_view(request):
         if existing_user:
             existing_user = User.objects.get(username=follow_user)
             try:
-                user_follows = UserFollows(user=request.user, followed_user=existing_user)
+                user_follows = UserFollows(user=request.user,
+                                           followed_user=existing_user)
                 user_follows.save()
-                messages.info(request, f"Vous êtes abonnés à {existing_user.username}")
-            except:
-                messages.error(request, "Vous êtes déjà abonnés à cet utilisateur")
+                messages.info(request,
+                              f"Vous êtes abonnés à {existing_user.username}")
+
+            except Exception:
+                messages.error(request,
+                               "Vous êtes déjà abonnés à cet utilisateur")
                 return redirect('follow')
+
         else:
-            messages.error(request, "Le nom de l'utilisateur demandé n'existe pas")
+            messages.error(request,
+                           "Le nom de l'utilisateur demandé n'existe pas")
             return redirect('follow')
 
     context = {
