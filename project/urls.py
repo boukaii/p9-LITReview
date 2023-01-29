@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Pour se connecter
-    path('login', blog.views.login_page, name="login"),
+    path('', blog.views.login_page, name="login"),
     # Pour se déconnecter
     path('logout', blog.views.logout_user, name='logout'),
     # Pour s'inscrire
