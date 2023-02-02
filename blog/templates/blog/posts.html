@@ -2,9 +2,8 @@
 {% block content %}
 <div class="container">
     <h2 style="text-align: center;">Vos Posts</h2>
-    <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
         {% for ticket in tickets %}
-            <div class="container">
+            <div class="row m-5 p-5 justify-content-around border border-dark bg-secondary text-light">
             <div class="row justify-content-center">
             <div class="col-6 mt-4">
             <div class="border-bottom border-light fst-italic">Vous avez publié un ticket</div>
@@ -12,7 +11,7 @@
             <h3 class="border-bottom border-light fst-italic">{{ ticket.titre }}</h3>
             <p class="border-bottom border-light fst-italic">{{ ticket.description }}</p>
             {% if ticket.image %}
-                <img class="ticket__image" src="{{ ticket.image.url }}">
+                <img class="ticket__image" src="{{ ticket.image.url }}" width="100px">
             {% endif %}
             <a class="btn" href="{% url 'ticket_edit' ticket.pk %}"><button type="submit" > Modifier le ticket </button></a>
             <a class="btn" href="{% url 'ticket_delete' ticket.pk %}"><button type="submit" > Supprimer le ticket </button></a>
@@ -26,7 +25,6 @@
             <a class="button-flux" href="{% url 'review_ticket' ticket.id %}"><button type="submit" > Créer une critique </button></a>
             {% endfor %}
         {% endfor %}
-            </div>
             </div>
             </div>
 {% endblock content %}

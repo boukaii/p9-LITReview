@@ -141,7 +141,7 @@ def create_review(request):
         'ticket_form': ticket_form,
         'review_form': review_form
     }
-    return render(request, 'blog/review.html', context)
+    return render(request, 'blog/reviews.html', context)
 
 
 @login_required
@@ -171,7 +171,7 @@ def review_ticket(request, ticket_id):
         'ticket': ticket,
         'form_is_ticket': form
     }
-    return render(request, 'blog/review.html', context)
+    return render(request, 'blog/reviews.html', context)
 
 
 @login_required
