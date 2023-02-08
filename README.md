@@ -60,7 +60,7 @@ Voici toutes les fonctionnalitées que l'application permet de réaliser :
 
 Pour macOS et Linux:  `env/bin/activate`
 
-Pour Windows:  `source env\Scripts\activate`
+Pour Windows:  `env\Scripts\activate`
 
 
 ### **_Installez les packages :_**
