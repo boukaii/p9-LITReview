@@ -46,7 +46,7 @@ Voici toutes les fonctionnalitées que l'application permet de réaliser :
 
 ###  **_Déplacer vers le nouveau dossier :_**
 
-`cd pythonProject9`
+`cd p9-LITReview`
 
 
 
